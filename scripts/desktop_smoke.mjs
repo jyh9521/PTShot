@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const packaged = process.argv.includes('--packaged');
 const live = process.argv.includes('--live');
-const directory = path.join(root, 'build', packaged ? 'packaged-smoke' : 'desktop-smoke');
+const directory = path.join(root, 'build', packaged ? (live ? 'packaged-smoke' : 'packaged-local-smoke') : 'desktop-smoke');
 await fs.mkdir(directory, { recursive: true });
 const env = { ...process.env, PTSHOT_USER_DATA: path.join(directory, 'user-data') };
 delete env.ELECTRON_RUN_AS_NODE;
@@ -27,7 +27,7 @@ try {
   const startBounds = await page.getByRole('button', { name: '开始截图并上传' }).boundingBox();
   const viewport = await page.evaluate(() => innerHeight);
   if (!startBounds || startBounds.y + startBounds.height > viewport) throw new Error('Primary action clipped');
-  await page.screenshot({ path: path.join(directory, 'workspace.png') });
+  await page.screenshot({ path: path.join(directory, 'workspace.png'), scale: 'css' });
 
   const video = path.join(root, 'build', 'test-media', '测试影片 sample.mp4');
   await fs.access(video);
@@ -44,7 +44,7 @@ try {
   await expect(page.getByRole('heading', { name: '分享这一刻' })).toBeVisible({ timeout: 120000 });
   await expect(page.locator('.image-card')).toHaveCount(2);
   await expect.poll(() => page.locator('.image-preview img').evaluateAll(images => images.every(img => img.complete && img.naturalWidth === 1280))).toBe(true);
-  await page.screenshot({ path: path.join(directory, 'captured-results.png') });
+  await page.screenshot({ path: path.join(directory, 'captured-results.png'), scale: 'css' });
 
   if (!live) {
     const report = JSON.parse(await fs.readFile(path.join(root, 'build', 'integration', 'REPORT.json'), 'utf8'));
@@ -77,7 +77,7 @@ try {
     }
     originalBytes = true;
   }
-  await page.screenshot({ path: path.join(directory, 'share-results.png') });
+  await page.screenshot({ path: path.join(directory, 'share-results.png'), scale: 'css' });
   if (errors.length) throw new Error(errors.join('\n'));
   const report = { packaged, live, default_window: initialBounds, removed_badge: true, removed_rail_decoration: true,
     primary_action_visible: true, capture: '2 real Mosaic PNGs', previews: 'original 1280x720 PNGs loaded',

@@ -98,9 +98,11 @@ Windows 打包：
 python -m pip install -r requirements-build.txt
 npm run package:win
 node scripts/desktop_smoke.mjs --packaged --live
+python scripts/archive_windows.py
 ```
 
-`dist/PTShot-M3E/` 为自包含目录。打包时只合并更新程序文件，不递归删除用户输出目录。
+`dist/PTShot-M3E/` 为自包含目录，归档为 `dist/PTShot-0.2.0-Windows-x64.zip`。
+归档前检查空间，完整重开并校验 ZIP 后再替换旧包。打包时只合并更新程序文件，不递归删除用户输出目录。
 
 命令行批处理仍可独立使用：
 
