@@ -129,7 +129,7 @@ app.whenReady().then(async () => {
     catch { return new Response('', { status: 404 }); }
   });
   session.defaultSession.setPermissionRequestHandler((_webContents, _permission, callback) => callback(false));
-  window = new BrowserWindow({ width: 1360, height: 940, minWidth: 860, minHeight: 640, show: false,
+  window = new BrowserWindow({ width: 1120, height: 820, minWidth: 860, minHeight: 640, show: false,
     title: 'PTShot', backgroundColor: '#f8f7ff', autoHideMenuBar: true,
     webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true,
       nodeIntegration: false, sandbox: true, spellcheck: false } });

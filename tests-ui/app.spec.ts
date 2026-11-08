@@ -39,6 +39,8 @@ test('actual Expressive library, controls, theme and no remote UI assets', async
   await expect(page.locator('.m3e-navigation-item[aria-current="page"]')).toHaveText(/截图/);
   await expect(page.getByRole('button', { name: '开始截图并上传' })).toBeDisabled();
   await expect(page.getByRole('switch', { name: '自动上传 Pixhost' })).toBeChecked();
+  await expect(page.locator('.app-bar .design-badge')).toHaveCount(0);
+  await expect(page.locator('.rail-container .brand-mark')).toHaveCount(0);
   const faces = await page.evaluate(async () => { await document.fonts.ready; return document.fonts.check('16px "Google Sans Flex"') && document.fonts.check('24px "Material Symbols Rounded"'); });
   expect(faces).toBe(true);
   await page.screenshot({ path: 'build/evidence-ui/workspace-light.png', fullPage: true });
@@ -106,6 +108,8 @@ test('dark theme, dependency settings and accessible icon labels', async ({ page
 test('compact high-DPI layout has no horizontal overflow and actions remain reachable', async ({ page }) => {
   await page.setViewportSize({ width: 860, height: 640 });
   await expect(page.getByRole('button', { name: '开始截图并上传' })).toBeVisible();
+  const box = await page.getByRole('button', { name: '开始截图并上传' }).boundingBox();
+  expect(box && box.y + box.height <= 640).toBeTruthy();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   expect(overflow).toBe(false);
   await page.getByRole('button', { name: '开始截图并上传' }).scrollIntoViewIfNeeded();
@@ -114,9 +118,9 @@ test('compact high-DPI layout has no horizontal overflow and actions remain reac
 
 test('keyboard and reduced-motion navigation', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.getByRole('button', { name: '展开导航' }).focus();
+  await page.getByRole('button', { name: '结果', exact: true }).focus();
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('button', { name: '收起导航' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '分享这一刻' })).toBeVisible();
   await page.getByRole('button', { name: '查看运行日志' }).click();
   await expect(page.getByText('暂无运行日志。添加影片并开始处理后，这里会显示每一步的记录。')).toBeVisible();
   await page.getByRole('button', { name: '关闭', exact: true }).click();

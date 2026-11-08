@@ -64,7 +64,6 @@ export default function App() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [showLogs, setShowLogs] = useState(false);
-  const [expanded, setExpanded] = useState(false);
   const [resultView, setResultView] = useState('images');
   const logRef = useRef<HTMLPreElement>(null);
   const logBuffer = useRef<string[]>([]);
@@ -153,15 +152,12 @@ export default function App() {
 
   return <div className="app-shell" data-design-system={DESIGN_SYSTEM}>
     <aside className="rail-container">
-      <WideNavigationRail aria-label="主导航" isExpanded={expanded} selectedKey={page}
+      <WideNavigationRail aria-label="主导航" selectedKey={page}
         onSelectionChange={setPage} items={[
           { key: 'workspace', label: '截图', icon: 'movie_edit' },
           { key: 'results', label: '结果', icon: 'photo_library', badge: successes.length || false, badgeLabel: `${successes.length} 张已上传` },
           { key: 'settings', label: '设置', icon: 'tune' },
-        ]} header={<div className="rail-header">
-          <IconButton aria-label={expanded ? '收起导航' : '展开导航'} onPress={() => setExpanded(!expanded)}><Icon name={expanded ? 'menu_open' : 'menu'} /></IconButton>
-          <Brand small />
-        </div>} />
+        ]} />
       <div className="rail-footer"><IconButton aria-label="项目 GitHub" onPress={() => guard(() => window.ptshot.openProject())}><Icon name="code" /></IconButton></div>
     </aside>
 
@@ -169,7 +165,6 @@ export default function App() {
       <header className="app-bar">
         <div className="wordmark">PTShot<span>截图 · 优化 · 分享</span></div>
         <div className="app-bar-actions">
-          <span className="design-badge">Material 3 Expressive</span>
           <IconButton aria-label={theme === 'light' ? '切换深色主题' : '切换浅色主题'} onPress={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
             <Icon name={theme === 'light' ? 'dark_mode' : 'light_mode'} />
           </IconButton>
@@ -200,7 +195,7 @@ export default function App() {
                     {videos.length === 0 ? <div className="queue-empty">
                       <div className="empty-art" aria-hidden="true"><div className="art-orbit" /><div className="art-frame back"><Icon name="image" /></div><div className="art-frame front"><Icon name="play_arrow" fill /></div><span className="art-spark">✦</span></div>
                       <h2>精彩画面，从这里开始</h2><p>拖入影片，或选择本地文件<br />截图与分享，一步完成。</p>
-                      <Button size="m" variant="tonal" icon={<Icon name="add" />} onPress={chooseVideos}>添加影片</Button>
+                      <Button size="s" variant="tonal" icon={<Icon name="add" />} onPress={chooseVideos}>添加影片</Button>
                       <span className="format-note">MKV · MP4 · MOV · AVI · 更多格式</span>
                     </div> : <>
                       <div className="video-list" aria-label="影片队列">
@@ -224,7 +219,7 @@ export default function App() {
                   <div className="field-section"><span className="field-caption">输出类型</span>
                     <ButtonGroup aria-label="输出类型" variant="connected" selectionMode="single" disallowEmptySelection buttonVariant="tonal"
                       selectedKeys={[settings.mode]} onSelectionChange={keys => update('mode', [...keys][0] as Settings['mode'])} isDisabled={busy}>
-                      <ButtonGroupItem id="screenshots" icon="crop_original">原尺寸</ButtonGroupItem>
+                      <ButtonGroupItem id="screenshots" icon="crop_original">原图</ButtonGroupItem>
                       <ButtonGroupItem id="sheet" icon="grid_view">拼图</ButtonGroupItem>
                       <ButtonGroupItem id="both" icon="stacks">两者</ButtonGroupItem>
                     </ButtonGroup>
@@ -244,14 +239,6 @@ export default function App() {
                 </Card>
               </div>
 
-              <Card className="action-dock" variant="filled">
-                <div className="dock-status"><div className={`status-dot ${busy ? 'active' : ''}`} /><span><strong>{busy ? '正在处理影片' : videos.length ? `已准备 ${videos.length} 部影片` : '等待添加影片'}</strong><small>{busy ? '过程与结果会自动保存' : '本地处理影片，仅上传生成的图片'}</small></span></div>
-                <div className="dock-buttons"><Button variant="text" icon={<Icon name="history" />} onPress={openHistory} isDisabled={busy}>历史任务</Button>
-                  {busy ? <Button size="m" variant="outlined" icon={<Icon name="stop" />} onPress={() => guard(() => window.ptshot.cancel())}>取消任务</Button>
-                    : <Button size="m" variant="filled" icon={<Icon name={settings.upload ? 'auto_awesome' : 'photo_camera'} />} isDisabled={!canStart} onPress={start}>{settings.upload ? '开始截图并上传' : '开始截图'}</Button>}
-                </div>
-                {busy && <div className="dock-progress"><LinearProgress shape="wavy" thickness="thick" aria-label="任务处理进度" value={job?.records.length ? done / job.records.length : undefined} /></div>}
-              </Card>
             </>}
 
             {page === 'results' && <>
@@ -287,6 +274,14 @@ export default function App() {
           </>}
         </div>
       </main>
+      {page === 'workspace' && !booting && <div className="persistent-dock"><Card className="action-dock" variant="filled">
+        <div className="dock-status"><div className={`status-dot ${busy ? 'active' : ''}`} /><span><strong>{busy ? '正在处理影片' : videos.length ? `已准备 ${videos.length} 部影片` : '等待添加影片'}</strong><small>{busy ? '过程与结果会自动保存' : '本地处理影片，仅上传生成的图片'}</small></span></div>
+        <div className="dock-buttons"><Button variant="text" icon={<Icon name="history" />} onPress={openHistory} isDisabled={busy}>历史任务</Button>
+          {busy ? <Button size="m" variant="outlined" icon={<Icon name="stop" />} onPress={() => guard(() => window.ptshot.cancel())}>取消任务</Button>
+            : <Button size="m" variant="filled" icon={<Icon name={settings.upload ? 'auto_awesome' : 'photo_camera'} />} isDisabled={!canStart} onPress={start}>{settings.upload ? '开始截图并上传' : '开始截图'}</Button>}
+        </div>
+        {busy && <div className="dock-progress"><LinearProgress shape="wavy" thickness="thick" aria-label="任务处理进度" value={job?.records.length ? done / job.records.length : undefined} /></div>}
+      </Card></div>}
       {busy && page !== 'workspace' && <div className="global-progress"><LinearProgress shape="wavy" aria-label="后台任务处理中" /><Button variant="text" onPress={() => guard(() => window.ptshot.cancel())}>取消任务</Button></div>}
       <footer className="app-footer"><span><span className={`tiny-dot ${busy ? 'busy' : ''}`} />{busy ? '正在处理 · 结果自动保存' : '本地处理，原图分享'}</span><span>Mosaic <i>×</i> oxipng <i>×</i> Pixhost</span></footer>
     </div>
