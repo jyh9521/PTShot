@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.venv/
+build/
+dist/
+output/
+tools/bin/
+tools/licenses/
+tools/*.zip
+tools/*.sha256
+*.spec
+
+node_modules/
+frontend-dist/
+test-results/
+playwright-report/
+tools/oxipng-api-download

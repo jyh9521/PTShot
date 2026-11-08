@@ -1,0 +1,34 @@
+{
+  "platform": "windows-x86_64",
+  "packages": [
+    {
+      "id": "mosaic",
+      "version": "0.1.10",
+      "url": "https://github.com/mosaicvideo/mosaic/releases/download/v0.1.10/mosaic-cli-windows-x86_64.exe",
+      "sha256": "cb0e246a17de52f1e983d89819615dd5ffb891b915a9fd912115581c7c992a49",
+      "files": {"mosaic-cli.exe": "mosaic-cli.exe"}
+    },
+    {
+      "id": "oxipng",
+      "version": "10.2.1",
+      "url": "https://github.com/oxipng/oxipng/releases/download/v10.2.1/oxipng-10.2.1-x86_64-pc-windows-msvc.zip",
+      "fallback_url": "https://api.github.com/repos/oxipng/oxipng/releases/assets/541679560",
+      "sha256": "7e940f83ee46874b73f53031f96a15834cb70b220af27391fb06fe7b4dd798e1",
+      "files": {"oxipng.exe": "oxipng.exe"}
+    },
+    {
+      "id": "mediainfo",
+      "version": "26.10",
+      "url": "https://mediaarea.net/download/binary/mediainfo/26.10/MediaInfo_CLI_26.10_Windows_x64.zip",
+      "sha256": "4cc94bd272903914c04f4f9a9f53a6c94b5ea6c6454cf738d29fa182c41e8a29",
+      "files": {"MediaInfo.exe": "mediainfo.exe"}
+    },
+    {
+      "id": "ffmpeg",
+      "version": "9.0.2-essentials",
+      "url": "https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-9.0.2-essentials_build.zip",
+      "sha256": "60f467265b1e312373dbcd92200c2618a74850f98d3d078e94296bb3fa2047ba",
+      "files": {"ffmpeg.exe": "ffmpeg.exe", "ffprobe.exe": "ffprobe.exe"}
+    }
+  ]
+}
