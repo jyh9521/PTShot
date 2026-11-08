@@ -41,6 +41,9 @@ test('actual Expressive library, controls, theme and no remote UI assets', async
   await expect(page.getByRole('switch', { name: '自动上传 Pixhost' })).toBeChecked();
   await expect(page.locator('.app-bar .design-badge')).toHaveCount(0);
   await expect(page.locator('.rail-container .brand-mark')).toHaveCount(0);
+  await expect(page.locator('.quality-note, .rail-footer')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '项目 GitHub' })).toHaveCount(0);
+  expect(await page.locator('.rail-container').evaluate(element => getComputedStyle(element).paddingTop)).toBe('0px');
   const faces = await page.evaluate(async () => { await document.fonts.ready; return document.fonts.check('16px "Google Sans Flex"') && document.fonts.check('24px "Material Symbols Rounded"'); });
   expect(faces).toBe(true);
   await page.screenshot({ path: 'build/evidence-ui/workspace-light.png', fullPage: true });

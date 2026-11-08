@@ -158,7 +158,6 @@ export default function App() {
           { key: 'results', label: '结果', icon: 'photo_library', badge: successes.length || false, badgeLabel: `${successes.length} 张已上传` },
           { key: 'settings', label: '设置', icon: 'tune' },
         ]} />
-      <div className="rail-footer"><IconButton aria-label="项目 GitHub" onPress={() => guard(() => window.ptshot.openProject())}><Icon name="code" /></IconButton></div>
     </aside>
 
     <div className="main-shell">
@@ -176,7 +175,6 @@ export default function App() {
         <div className="content-container">
           <div className="page-heading">
             <div><h1>{header.title}</h1><p>{header.subtitle}</p></div>
-            {page === 'workspace' && <div className="quality-note"><Icon name="verified" fill /><span>原尺寸 PNG<strong>始终保持无损</strong></span></div>}
             {page === 'results' && <Button variant="outlined" icon={<Icon name="history" />} onPress={openHistory} isDisabled={busy}>打开历史任务</Button>}
           </div>
 
