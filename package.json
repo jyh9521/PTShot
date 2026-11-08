@@ -3,6 +3,7 @@
   "productName": "PTShot",
   "version": "0.2.0",
   "private": true,
+  "type": "module",
   "description": "Mosaic screenshots, lossless PNG optimization and Pixhost uploads in Material 3 Expressive.",
   "main": "desktop/main.cjs",
   "scripts": {
