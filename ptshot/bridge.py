@@ -6,10 +6,11 @@ import os
 import sys
 import threading
 from dataclasses import asdict
+from datetime import datetime
 from pathlib import Path
 
 from . import __version__
-from .core import Job, Settings
+from .core import Job, Settings, atomic_text
 from .pipeline import Pipeline
 from .tools import app_root, discover_tools, install_missing
 
@@ -55,8 +56,14 @@ def main() -> None:
                 except (ValueError, AttributeError):
                     pass
         threading.Thread(target=listen_for_cancel, daemon=True).start()
-        pipeline = Pipeline(root=root, stop=stop, log=lambda message: emit("log", message=message),
-                            changed=lambda job: emit("job", job=job_snapshot(job)))
+        logs = []
+        def log(message):
+            logs.append(datetime.now().strftime("%H:%M:%S  ") + message)
+            emit("log", message=message)
+        def changed(job):
+            atomic_text(job.directory / "run.log", "\n".join(logs))
+            emit("job", job=job_snapshot(job))
+        pipeline = Pipeline(root=root, stop=stop, log=log, changed=changed)
         if action == "inspect":
             emit("result", tools=discover_tools(root, settings.tools), version=__version__)
         elif action == "install":

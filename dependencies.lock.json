@@ -5,6 +5,7 @@
       "id": "mosaic",
       "version": "0.1.10",
       "url": "https://github.com/mosaicvideo/mosaic/releases/download/v0.1.10/mosaic-cli-windows-x86_64.exe",
+      "fallback_url": "https://api.github.com/repos/mosaicvideo/mosaic/releases/assets/666745987",
       "sha256": "cb0e246a17de52f1e983d89819615dd5ffb891b915a9fd912115581c7c992a49",
       "files": {"mosaic-cli.exe": "mosaic-cli.exe"}
     },

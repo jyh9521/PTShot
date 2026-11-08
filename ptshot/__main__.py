@@ -16,7 +16,7 @@ def main() -> None:
         if stream is not None and hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8", errors="replace")
     if len(sys.argv) == 1 or sys.argv[1] == "gui":
-        from .gui import launch
+        from .desktop import launch
         launch()
         return
     parser = argparse.ArgumentParser(description="PT Shot · Mosaic + oxipng + Pixhost")

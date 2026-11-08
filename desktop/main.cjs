@@ -8,6 +8,7 @@ const { createHash } = require('node:crypto');
 const readline = require('node:readline');
 
 app.setName('PTShot');
+if (process.env.PTSHOT_USER_DATA) app.setPath('userData', path.resolve(process.env.PTSHOT_USER_DATA));
 protocol.registerSchemesAsPrivileged([
   { scheme: 'ptshot', privileges: { standard: true, secure: true, supportFetchAPI: true } },
   { scheme: 'ptshot-media', privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true } },

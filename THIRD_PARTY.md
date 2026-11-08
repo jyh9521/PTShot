@@ -1,6 +1,6 @@
 # Third-party components
 
-PT Shot invokes unmodified external CLI programs as separate processes.
+PTShot invokes unmodified external CLI programs as separate processes.
 
 | Component | License | Project / corresponding source |
 | --- | --- | --- |
@@ -11,10 +11,18 @@ PT Shot invokes unmodified external CLI programs as separate processes.
 | Python 3.14 | PSF License | https://www.python.org/downloads/source/ |
 | Tcl / Tk 8.6 | Tcl/Tk license | https://www.tcl.tk/software/tcltk/license.html |
 | PyInstaller bootloader 6.22.3 | GPL-2.0-or-later with bootloader exception | https://pyinstaller.org/en/stable/license.html |
+| Electron 45.2.3 / Chromium | MIT / BSD and third-party notices | https://github.com/electron/electron/tree/v45.2.3 |
+| M3 Expressive Web 1.8.0 | Apache-2.0 | https://github.com/kyra-labs/m3exp-web |
+| Google Sans Flex | SIL OFL-1.1 | Bundled with m3e-tokens, full license retained |
+| Material Symbols Rounded | Apache-2.0 | Bundled with m3e-tokens, full license retained |
+| React 19.3.1 / React DOM | MIT | https://github.com/facebook/react |
+| React Aria / React Stately / Motion | Apache-2.0 / MIT, as recorded in component notices | See THIRD_PARTY_LICENSES.txt in the package |
 
 Full upstream license notices for the external programs are retained in `tools/licenses/`.
 The FFmpeg build's original `README.txt` records its build configuration and linked libraries.
-The frozen Python runtime's license and Tcl/Tk license files are retained under `_internal/`.
+The frozen Python worker runtime's license is retained under `resources/worker/_internal/`.
+The current desktop package does not use Tcl/Tk. Electron's original license and Chromium
+notices remain in the portable directory. `THIRD_PARTY_LICENSES.txt` aggregates npm and font notices.
 
 Dependency downloads are pinned in `dependencies.lock.json`. If FFmpeg is already installed,
 the build script records the exact reused executables' versions and SHA-256 hashes in

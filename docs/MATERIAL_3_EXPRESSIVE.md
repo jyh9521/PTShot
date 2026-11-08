@@ -18,8 +18,11 @@ No listening HTTP service or remote UI code is required.
   emphasized type, container surfaces and expressive corner scale. Chinese text uses the
   local system's Chinese sans-serif fallback.
 - Three main destinations: screenshot workspace, upload results, dependencies/settings.
-  A compact navigation rail expands to the available window size; content panes scroll
+  A compact navigation rail contains only the three named destinations; content panes scroll
   independently so actions remain reachable under Windows display scaling.
+- User review: remove the design-system badge, decorative rail logo/menu, unused rail corner
+  blocks, anonymous code-link button and redundant quality badge. Default to 1120×820 and
+  keep the primary action outside the scroll pane. The project link lives in Settings.
 - Light/dark themes, keyboard navigation, named icon buttons, visible focus and
   `prefers-reduced-motion` are validated alongside functional flows.
 

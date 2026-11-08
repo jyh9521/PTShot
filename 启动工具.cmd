@@ -1,7 +1,7 @@
 @echo off
 cd /d "%~dp0"
-if exist "%~dp0dist\PTShot\PTShot.exe" (
-  start "" "%~dp0dist\PTShot\PTShot.exe"
+if exist "%~dp0dist\PTShot-M3E\PTShot.exe" (
+  start "" "%~dp0dist\PTShot-M3E\PTShot.exe"
   exit /b 0
 )
 where pythonw >nul 2>nul

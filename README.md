@@ -1,106 +1,123 @@
-# PT Shot · PT 截图工具
+# PTShot
 
-中文 Windows 桌面工具：**Mosaic 截图 → 超过 10MB 时 oxipng 无损优化 → Pixhost 上传 → 高清原图直链与一键复制 BBCode**。
+**影片截图 → 超限无损优化 → Pixhost 高清直链 → 一键复制 BBCode。**
 
-## 直接使用
+Windows 桌面界面采用 **Material 3 Expressive** 组件、语义色彩、形状变化与弹簧动效。
+默认窗口 **1120 × 820**，只有截图、结果、设置三个导航入口。无功能装饰、设计体系标签和画质徽章已移除，开始按钮固定在底部。
 
-1. 解压 `PTShot-Windows-x64.zip`，双击 `PTShot/PTShot.exe`。整个文件夹一起保留。
-2. 添加一部或多部影片，也可添加文件夹（递归查找常见影片格式）。
-3. 选择「原尺寸截图」「总览拼图」或「截图 + 拼图」，设置截图张数 / 拼图布局及保存位置。
-4. 点击「开始截图并上传」。默认每部影片均匀截取 6 张原尺寸 PNG。
-5. 「上传结果」中点击 **一键复制全部 BBCode** 或 **复制全部高清直链**。
+项目地址：[github.com/jyh9521/PTShot](https://github.com/jyh9521/PTShot)。
 
-返回的是 `https://imgN.pixhost.to/images/...png` 这类高清原图直链，BBCode 为每张一行：
+## 使用
+
+打包版：解压后双击 **`PTShot-M3E/PTShot.exe`**，整个文件夹一起保留。自带 Electron、Python 工作进程和 5 项引擎，不需要另装 Python 或 Node.js。
+
+1. 添加影片 / 文件夹，也可以拖入影片文件。
+2. 选择原图、拼图或两者，设置张数、保存目录和自动上传。
+3. 点击「开始截图并上传」。
+4. 结果页点击「复制全部 BBCode」或「复制全部直链」。
 
 ```text
 [img]https://img3.pixhost.to/images/目录/图片.png[/img]
 [img]https://img3.pixhost.to/images/目录/另一张.png[/img]
 ```
 
-本地源码也可双击 `启动工具.cmd`，或使用 Python 3.11+：
+复制的是高清原图直链，不是缩略图或展示页。结果页也可预览、打开本地图片，或打开历史 `session.json` 重试未完成图片。
 
-```powershell
-python -m ptshot
-```
+## 截图与画质
 
-程序本身仅使用 Python 标准库（包含 Tkinter），无需 pip 安装运行依赖。打包版自带 Python/Tkinter 和截图工具，不要求安装 Python。
+- 真正调用上游 **Mosaic CLI 0.1.10**。默认每部影片均匀截取 6 张原尺寸 PNG，也支持带时间戳和影片信息的总览拼图。
+- 图片 **大于 10,000,000 字节**时才调用 **oxipng 10.2.1**，等于阈值不优化。
+- 在副本上使用 `-o 4 --strip safe --timeout 120` 无损优化，不改源影片和原始 PNG，不启用 `--alpha` 或 `--scale16`。
+- 上传明确指定 `optimize_for_web=0`，不请求图床的有损 WebP 转换或尺寸缩减。
+- 优化后仍超限：保留图片、标记超限、继续其余图片。不静默缩小或转成有损格式。
+- 高清地址从 API 返回的展示页中解析，再校验返回 PNG 类型及原始尺寸。不通过替换缩略图域名猜测。
+- 拼图宽度由 Mosaic 对网格取整，可能比目标小几像素。例如目标 1280px、2 列、10px 间距的实测输出为 1278px。
 
-## 大图处理与画质
+## 保存与续传
 
-- 阈值严格为 **10,000,000 字节**；等于阈值不压缩，大于阈值才调用 oxipng。
-- Mosaic 生成 PNG；原尺寸截图不在本工具中缩放。HDR 的映射由 Mosaic 自身处理。
-- oxipng 在**副本**上运行 `-o 4 --strip safe --timeout 120`，保留原始 PNG；不启用 `--alpha`、`--scale16` 等会改变像素数据的选项。
-- 上传明确指定 `optimize_for_web=0`，不请求 Pixhost 的有损 WebP 转换或尺寸缩减。
-- 无损优化后仍大于 10MB：这张图片标记超限、跳过上传，其余图片继续。原图和优化副本都保留。拼图可降低目标宽度后重新生成；单张原尺寸截图不做静默降质。
-- 拼图含时间戳、影片信息。目标宽度由 Mosaic 按偶数像素网格取整，实际可能小几像素；例如 1280px、2 列、10px 间距的实测输出为 1278px。
-
-## 依赖与安装
-
-截图引擎为上游 `mosaic-cli`，不是重新实现或改用 FFmpeg 代替 Mosaic。
-
-| 依赖 | 锁定版本 | 用途 |
-| --- | --- | --- |
-| Mosaic CLI | 0.1.10 | 原尺寸 PNG / 总览拼图 |
-| oxipng | 10.2.1 | 仅处理超限 PNG |
-| FFmpeg / ffprobe | 下载包 9.0.2 essentials；已有安装可复用 | Mosaic 所需的解码与影片分析 |
-| MediaInfo CLI | 26.10 | Mosaic 所需的媒体信息 |
-
-「依赖设置」支持自动检测、指定每个程序路径，以及**一键下载缺少的依赖**（Windows x64）。下载版本与 SHA-256 写在 `dependencies.lock.json`，只安装到工具自身的 `tools/bin`，不修改系统 PATH。GitHub 下载不畅时，oxipng 可用同版本官方 GitHub Assets API 下载，仍校验相同 SHA-256。
-
-发现顺序：明确指定的路径 → 工具目录 → 系统 PATH。明确指定的路径失效时会提示修正，不悄悄替换。Mosaic 使用随工具提供的独立 TOML 配置，避免污染或继承已有全局配置。
-
-## 每次任务的文件
-
-输出目录下按时间创建独立的 `PTShot-年月日-时分秒-微秒` 文件夹：
+每次创建独立任务文件夹，同名影片按来源分目录，不相互覆盖：
 
 ```text
-originals/      原始截图，按影片与输出类型分目录
-optimized/      仅超 10MB 时产生的优化副本
-session.json    每张图片的路径、大小、尺寸、状态、展示页与原图直链
-urls.txt        本次成功上传的全部高清原图直链
-bbcode.txt      本次成功上传的全部 [img]高清原图直链[/img]
-run.log         桌面端运行日志
+originals/       原始截图
+optimized/       仅超 10 MB 时生成的优化副本
+session.json     每张图片的状态、尺寸、展示页和高清直链
+urls.txt         本次成功上传的全部高清直链
+bbcode.txt       本次成功上传的全部 BBCode
+run.log          运行日志
 ```
 
-同名影片在不同文件夹中也分别保存，不相互覆盖。每一步完成后原子保存任务记录与结果；界面可以打开历史 `session.json` 并点击「上传 / 重试未完成」。已成功的图片会跳过；API 已返回展示页但后续解析失败的图片只重新解析，不重复上传。
+任务和导出文件每一步原子保存。历史任务会跳过已上传图片；有展示页回执但原图解析失败时，只重试解析，不重复上传。
 
-取消会终止 Mosaic / oxipng 及其子进程，并保留已完成的结果。进行中的网络请求使用 90 秒超时；收到的上传回执会先保存再响应取消。被取消或失败的**截图阶段**需重新开始该影片，历史任务重试仅处理已经登记的图片。
+上传 POST 不自动重试，避免响应丢失造成重复上传。若服务端已上传但回执尚未收到时断网，显式重试可能再次上传。
+取消会终止截图 / 优化子进程并保存已有结果；网络请求使用 90 秒超时，收到回执后会先保存再响应取消。
+历史重试只处理已登记图片，失败或取消的截图阶段可重新添加该影片。
 
-上传 POST 不做自动重试，以免响应丢失造成重复上传。若网络在上传成功但收到回执之前中断，显式重试可能再次上传该图片。原图直链由展示页 HTML 中的实际原图解析，再核实返回 PNG 类型与本地图片尺寸，不通过替换缩略图域名猜测。
+Pixhost 无需 API Key。普通内容和成人内容分类在设置页选择。只上传生成图片，不上传源影片。
 
-Pixhost API 无需 API Key。内容分类支持普通内容 (`content_type=0`) 与成人内容 (`1`)。只上传生成图片，不上传源影片。偏好设置存放于 `%APPDATA%/PTShot/settings.json`。
+## 依赖
 
-## 命令行
+依赖设置支持单独选择程序、重新检测和一键安装缺少的依赖。
+
+| 程序 | 版本 / 作用 |
+| --- | --- |
+| Mosaic CLI | 0.1.10，截图与拼图 |
+| oxipng | 10.2.1，超限 PNG 无损优化 |
+| FFmpeg / ffprobe | 自动下载锁定 9.0.2 essentials，已有安装可复用 |
+| MediaInfo CLI | 26.10，影片元数据 |
+
+下载来源与 SHA-256 固定在 `dependencies.lock.json`。只安装到工具目录，不修改系统 PATH。
+优先级：明确指定路径 → 工具目录 → PATH。Mosaic 使用独立 TOML 配置。
+
+## 开发
+
+需要 **Node.js 24、Python 3.11+**。Python 工作进程只使用标准库。
+
+```powershell
+npm ci
+python scripts/prepare_electron.py
+python -m ptshot install-tools
+npm start
+```
+
+已有构建时也可双击 `启动工具.cmd` 或运行 `python -m ptshot`。打包版优先启动新界面，不再启动 Tkinter。
+
+```powershell
+$env:PYTHONUTF8='1'
+python -m unittest discover -v
+npm run build
+npx playwright install chromium
+npm test
+python scripts/integration_smoke.py        # 实际 Mosaic 与 >10MB oxipng 分支
+python scripts/integration_smoke.py --live # 仅上传合成测试图，并比较下载字节
+npm run test:desktop                      # 真实桌面截图、预览和剪贴板；需本地集成测试样例
+```
+
+Windows 打包：
+
+```powershell
+python -m pip install -r requirements-build.txt
+npm run package:win
+node scripts/desktop_smoke.mjs --packaged --live
+```
+
+`dist/PTShot-M3E/` 为自包含目录。打包时只合并更新程序文件，不递归删除用户输出目录。
+
+命令行批处理仍可独立使用：
 
 ```powershell
 python -m ptshot doctor
-python -m ptshot install-tools
 python -m ptshot run "D:\影片\movie.mkv" --count 6 --output "D:\截图"
 python -m ptshot run "D:\影片\movie.mkv" --mode both --cols 4 --rows 4 --width 3840 --no-upload
 python -m ptshot resume "D:\截图\PTShot-...\session.json"
 ```
 
-命令行结束会输出 `SESSION=...` 和 `RESULT state=... images=... uploaded=...`。全部完成退出码 0；部分失败、取消或配置错误退出码 1。`--no-upload` 仅截图与条件优化，后续可用 `resume` 上传。
+## 实现
 
-## 开发与验证
+- `frontend/`：React + M3 Expressive Web 1.8.0，所有字体和图标本地打包。
+- `desktop/`：Electron 45.2.3，本地受隔离的界面与窄 IPC 接口，不开启 HTTP 服务。
+- `ptshot/bridge.py`：JSON-lines 工作进程，传递任务进度和取消事件。
+- `ptshot/core.py` / `pipeline.py` / `network.py` / `tools.py`：数据契约、编排、Pixhost 和依赖管理。
+- [设计说明](docs/MATERIAL_3_EXPRESSIVE.md)：规范参考与组件来源。M3 Expressive Web 是独立实现，不是 Google 产品。
+- [第三方组件](THIRD_PARTY.md)，打包版也包含完整许可证。
 
-```powershell
-$env:PYTHONUTF8='1'
-python -m unittest discover -v
-python scripts/integration_smoke.py       # 合成影片，实际 Mosaic 与 >10MB 的 oxipng 分支
-python scripts/integration_smoke.py --live # 仅将合成测试图片实际上传 Pixhost，并核对下载字节
-python scripts/gui_smoke.py               # 需已有 build/live-smoke 实测任务；窗口、预览、实际剪贴板验证
-python -m pip install -r requirements-build.txt
-python scripts/build_windows.py
-```
-
-运行时集成使用固定的 subprocess 参数列表，不拼接 shell。网络 / 提取 / 优化在后台线程执行；Tk 只在主线程刷新。`ptshot/core.py` 为数据与格式契约，`network.py` 为 Pixhost 适配器，`pipeline.py` 编排步骤，`tools.py` 管理依赖，`gui.py` 与 `__main__.py` 分别提供图形和命令行入口。
-
-## 上游文档
-
-- [Mosaic 项目](https://github.com/mosaicvideo/mosaic)、[CLI 参数](https://mosaicvideo.github.io/cli.html)
-- [oxipng 项目与说明](https://github.com/oxipng/oxipng)
-- [Pixhost API v2](https://pixhost.to/api/index.html)
-- [FFmpeg Windows 构建](https://www.gyan.dev/ffmpeg/builds/)、[MediaInfo CLI](https://mediaarea.net/en/MediaInfo/Download/Windows)
-
-打包目录中的 `THIRD_PARTY.md` 与 `tools/licenses/` 记录随包依赖的许可证和来源。
+上游文档：[Mosaic](https://github.com/mosaicvideo/mosaic)、[CLI](https://mosaicvideo.github.io/cli.html)、[oxipng](https://github.com/oxipng/oxipng)、[Pixhost API](https://pixhost.to/api/index.html)。
